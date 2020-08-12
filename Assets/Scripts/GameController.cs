@@ -46,6 +46,16 @@ public class GameController : MonoBehaviour
         Chunk emptyChunk = chunks.Find((c) => c.id == 16);
         int dif = Mathf.Abs(chunk.pos - emptyChunk.pos);
         int emptyPos = emptyChunk.pos;
+        if (chunk.pos % 4 == 1)
+        {
+            if (emptyPos == chunk.pos - 1)
+                return;
+        }
+        if (chunk.pos % 4 == 0)
+        {
+            if (emptyPos == chunk.pos + 1)
+                return;
+        }
         if (dif == 1 || dif == 4)
         {
             emptyChunk.Replace(chunk.id);
@@ -92,14 +102,17 @@ public class GameController : MonoBehaviour
 
             Chunk chunk = Instantiate(prefChunk, chunkContainer).GetComponent<Chunk>();
             chunks.Add(chunk);
-            if (i <= 15)
-                numbers.Add(i);
+            //if (i <= 15)
+            numbers.Add(i);
 
         }
         numbers = Shuffle(numbers);
+
+
+
         for (int i = 0; i < chunks.Count; i++)
         {
-            int id = i == 15 ? 16 : numbers[i];
+            int id = numbers[i];
             int pos = i + 1;
             chunks[i].Setup(id, pos);
         }
@@ -107,22 +120,120 @@ public class GameController : MonoBehaviour
 
 
 
-    private List<T> Shuffle<T>(List<T> list)
+    private List<int> Shuffle(List<int> numbers)
     {
-        List<T> randomList = new List<T>();
+        int zeroIndex = 15;
 
-
-        int rndIndex = 0;
-
-        while (list.Count > 0)
+        for (int i = 0; i < 200; i++)
         {
-            rndIndex = Random.Range(0, list.Count);
-            randomList.Add(list[rndIndex]);
-            list.RemoveAt(rndIndex);
+
+
+            int next = 0;
+            if (zeroIndex >= 12 && zeroIndex <= 15)
+            {
+                if (zeroIndex == 12)
+                {
+                    int rnd = Random.Range(0, 2);
+                    next = zeroIndex + (rnd == 0 ? -4 : 1);
+                    //-4,1
+                }
+                else if (zeroIndex == 13 || zeroIndex == 14)
+                {
+                    int rnd = Random.Range(0, 3);
+                    if (rnd == 0)
+                        next = zeroIndex - 1;
+                    else if (rnd == 1)
+                        next = zeroIndex + 1;
+                    else
+                        next = zeroIndex - 4;
+                    //-1,+1,-4
+                }
+                else if (zeroIndex == 15)
+                {
+                    int rnd = Random.Range(0, 2);
+                    next = zeroIndex + (rnd == 0 ? -1 : -4);
+                    //-1,-4
+                }
+            }
+            else if (zeroIndex >= 8 && zeroIndex <= 11 || zeroIndex >= 4 && zeroIndex <= 7)
+            {
+                if (zeroIndex == 8 || zeroIndex == 4)
+                {
+                    int rnd = Random.Range(0, 3);
+                    if (rnd == 0)
+                        next = zeroIndex + 1;
+                    else if (rnd == 1)
+                        next = zeroIndex + 4;
+                    else
+                        next = zeroIndex - 4;
+                    //+1,+4,-4
+                }
+                else if (zeroIndex == 9 || zeroIndex == 10 || zeroIndex == 5 || zeroIndex == 6)
+                {
+                    int rnd = Random.Range(0, 4);
+                    if (rnd == 0)
+                        next = zeroIndex - 1;
+                    else if (rnd == 1)
+                        next = zeroIndex + 1;
+                    else if (rnd == 2)
+                        next = zeroIndex - 4;
+                    else
+                        next = zeroIndex + 4;
+                    //-1,+1,-4,+4
+                }
+                else if (zeroIndex == 11 || zeroIndex == 7)
+                {
+                    int rnd = Random.Range(0, 3);
+                    if (rnd == 0)
+                        next = zeroIndex - 1;
+                    else if (rnd == 1)
+                        next = zeroIndex - 4;
+                    else
+                        next = zeroIndex + 4;
+                    //-1,-4,+4
+                }
+            }
+            else if (zeroIndex >= 0 && zeroIndex <= 3)
+            {
+                if (zeroIndex == 0)
+                {
+                    //+1,4
+                    int rnd = Random.Range(0, 2);
+                    next = zeroIndex + (rnd == 0 ? 1 : 4);
+                }
+                else if (zeroIndex == 1 || zeroIndex == 2)
+                {
+                    //+1,-1,+4
+                    int rnd = Random.Range(0, 3);
+                    if (rnd == 0)
+                        next = zeroIndex + 1;
+                    else if (rnd == 1)
+                        next = zeroIndex - 1;
+                    else
+                        next = zeroIndex + 4;
+                }
+                else if (zeroIndex == 3)
+                {
+                    //-1,+4
+                    int rnd = Random.Range(0, 2);
+                    next = zeroIndex + (rnd == 0 ? -1 : 4);
+                }
+            }
+
+            int a = numbers[zeroIndex];
+            int b = numbers[next];
+
+            numbers[zeroIndex] = b;
+            numbers[next] = a;
+
+            zeroIndex = next;
         }
 
-        return randomList;
+        return numbers;
     }
+
+
+
 
     public void OnRestart()
     {

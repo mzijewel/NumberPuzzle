@@ -29,7 +29,6 @@ public class Chunk : MonoBehaviour
             c.a = 0;
             img.color = c;
             txtNumber.text = "";
-            print("Zeo");
         }
         else
         {
