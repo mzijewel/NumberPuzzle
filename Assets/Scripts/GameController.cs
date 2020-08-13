@@ -127,7 +127,7 @@ public class GameController : MonoBehaviour
     {
         int zeroIndex = 15;
 
-        for (int i = 0; i < 200; i++)
+        for (int i = 0; i < 300; i++)
         {
 
 
