@@ -22,6 +22,7 @@ public class GameController : MonoBehaviour
     private int moveCount;
     private List<int> numbers;
     private int bestMove, totalWin;
+    private bool isWin = false;
 
     private const string BEST_MOVE = "bestMove";
     private const string TOTAL_WIN = "totalWin";
@@ -43,6 +44,7 @@ public class GameController : MonoBehaviour
     }
     public void OnChunkClick(Chunk chunk)
     {
+        if (isWin) return;
         Chunk emptyChunk = chunks.Find((c) => c.id == 16);
         int dif = Mathf.Abs(chunk.pos - emptyChunk.pos);
         int emptyPos = emptyChunk.pos;
@@ -60,8 +62,8 @@ public class GameController : MonoBehaviour
         {
             emptyChunk.Replace(chunk.id);
             chunk.Replace(16);
-            CheckWin();
             moveCount++;
+            CheckWin();           
             txtMoveCount.text = moveCount.ToString();
         }
 
@@ -69,16 +71,17 @@ public class GameController : MonoBehaviour
 
     private void CheckWin()
     {
-        bool isWin = true;
+
         foreach (Chunk chunk in chunks)
         {
             if (chunk.id != chunk.pos)
             {
                 isWin = false;
-                break;
+                return;
             }
 
         }
+        isWin = true;
         if (isWin)
         {
             totalWin++;
@@ -95,6 +98,7 @@ public class GameController : MonoBehaviour
     }
     private void Generate()
     {
+        isWin = false;
         chunks = new List<Chunk>();
         numbers = new List<int>();
         for (int i = 1; i <= 16; i++)
@@ -102,7 +106,6 @@ public class GameController : MonoBehaviour
 
             Chunk chunk = Instantiate(prefChunk, chunkContainer).GetComponent<Chunk>();
             chunks.Add(chunk);
-            //if (i <= 15)
             numbers.Add(i);
 
         }
